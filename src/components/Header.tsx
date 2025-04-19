@@ -1,14 +1,23 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { User } from '@/lib/types';
+import { ThemeToggle } from './ThemeToggle';
+import { LogIn, UserPlus } from 'lucide-react';
 
 interface HeaderProps {
   currentUser: User | null;
 }
 
 export const Header: React.FC<HeaderProps> = ({ currentUser }) => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.reload();
+  };
+
   return (
     <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40 sticky top-0 z-20">
       <div className="container flex h-16 items-center justify-between px-4 sm:px-8">
@@ -44,9 +53,11 @@ export const Header: React.FC<HeaderProps> = ({ currentUser }) => {
         </nav>
 
         {/* User Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          
           {currentUser ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               <span className="text-sm text-foreground/70">
                 {currentUser.name}
               </span>
@@ -55,11 +66,19 @@ export const Header: React.FC<HeaderProps> = ({ currentUser }) => {
                   <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover" />
                 </div>
               )}
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                Logout
+              </Button>
             </div>
           ) : (
-            <Button variant="outline" size="sm">
-              Sign In
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>
+                <LogIn className="mr-2 h-4 w-4" /> Sign In
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => navigate('/register')}>
+                <UserPlus className="mr-2 h-4 w-4" /> Register
+              </Button>
+            </div>
           )}
         </div>
       </div>
