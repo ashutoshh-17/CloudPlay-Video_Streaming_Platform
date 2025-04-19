@@ -52,6 +52,12 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+                cloudplay: {
+                    DEFAULT: '#0EA5E9',
+                    dark: '#0284C7',
+                    light: '#7DD3FC',
+                    foreground: '#F0F9FF'
+                },
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
