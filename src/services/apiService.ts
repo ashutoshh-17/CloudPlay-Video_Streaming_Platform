@@ -31,6 +31,25 @@ export async function getVideoById(id: string): Promise<Video> {
   return fetchData<Video>(`/videos/${id}`);
 }
 
+// Upload a video
+export async function uploadVideo(file: File, title: string, description: string): Promise<Video> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('title', title);
+  formData.append('description', description);
+  
+  const response = await fetch(`${API_BASE_URL}/videos/upload`, {
+    method: 'POST',
+    body: formData,
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Video upload failed: ${response.statusText}`);
+  }
+  
+  return await response.json();
+}
+
 // Get available rooms
 export async function getRooms(): Promise<Room[]> {
   return fetchData<Room[]>('/rooms');
@@ -42,10 +61,18 @@ export async function getRoomById(id: string): Promise<Room> {
 }
 
 // Create a new room
-export async function createRoom(name: string, videoId: string | null): Promise<Room> {
+export async function createRoom(
+  name: string, 
+  videoId: string | null, 
+  scheduledTime?: Date
+): Promise<Room> {
   return fetchData<Room>('/rooms', {
     method: 'POST',
-    body: JSON.stringify({ name, videoId }),
+    body: JSON.stringify({ 
+      name, 
+      videoId,
+      scheduledTime: scheduledTime ? scheduledTime.toISOString() : null 
+    }),
   });
 }
 

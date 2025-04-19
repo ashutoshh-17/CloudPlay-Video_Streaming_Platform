@@ -26,6 +26,7 @@ export interface Room {
   currentVideo: Video | null;
   viewers: number;
   isPrivate: boolean;
+  scheduledTime?: string; // ISO date string for when the room's video will go live
 }
 
 // WebSocket message types
