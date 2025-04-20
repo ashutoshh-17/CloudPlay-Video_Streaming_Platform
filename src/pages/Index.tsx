@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
@@ -14,36 +13,15 @@ const Index: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Generate a random user ID for demo purposes
-  const getUserId = () => {
-    const storedId = localStorage.getItem('cloudplay-user-id');
-    if (storedId) return storedId;
-    
-    const newId = Math.random().toString(36).substring(2, 15);
-    localStorage.setItem('cloudplay-user-id', newId);
-    return newId;
-  };
-
   // Fetch initial data
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
-        // Try to get current user (if authentication is implemented)
+        // Try to get current user (if authenticated)
         const user = await getCurrentUser();
-        
-        // If no authenticated user, create a temporary one for demo
-        if (!user) {
-          const userId = getUserId();
-          const tempUser: User = {
-            id: userId,
-            name: `Guest ${userId.substring(0, 4)}`,
-          };
-          setCurrentUser(tempUser);
-        } else {
-          setCurrentUser(user);
-        }
+        setCurrentUser(user);
         
         // Fetch rooms and videos
         const [roomsData, videosData] = await Promise.all([
@@ -56,7 +34,7 @@ const Index: React.FC = () => {
         
       } catch (err) {
         console.error('Error fetching data:', err);
-        setError('Failed to load data. This is a demo frontend without the required SpringBoot backend.');
+        setError('Failed to load data. Please check if the backend server is running.');
         
         // For demo purposes, set some mock data when backend is not available
         setRooms([
