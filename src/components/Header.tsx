@@ -13,11 +13,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ currentUser }) => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    window.location.reload();
-  };
-
   return (
     <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40 sticky top-0 z-20">
       <div className="container flex h-16 items-center justify-between px-4 sm:px-8">
@@ -66,7 +61,11 @@ export const Header: React.FC<HeaderProps> = ({ currentUser }) => {
                   <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover" />
                 </div>
               )}
-              <Button variant="outline" size="sm" onClick={handleLogout}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => window.location.href = 'http://localhost:8080/logout'}
+              >
                 Logout
               </Button>
             </div>
