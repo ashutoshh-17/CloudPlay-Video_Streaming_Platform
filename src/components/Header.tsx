@@ -13,6 +13,13 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ currentUser }) => {
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    // Clear JSESSIONID cookie
+    document.cookie = 'JSESSIONID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    // Reload the page to reset the application state
+    window.location.reload();
+  };
+
   return (
     <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40 sticky top-0 z-20">
       <div className="container flex h-16 items-center justify-between px-4 sm:px-8">
@@ -64,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({ currentUser }) => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => window.location.href = 'http://localhost:8080/logout'}
+                onClick={handleLogout}
               >
                 Logout
               </Button>
