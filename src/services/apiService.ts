@@ -2,7 +2,7 @@
 import { Room, User, Video } from '@/lib/types';
 
 // Base API URL - replace with your SpringBoot API URL
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 // Helper function for API calls
 async function fetchData<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -11,6 +11,7 @@ async function fetchData<T>(endpoint: string, options: RequestInit = {}): Promis
       'Content-Type': 'application/json',
       ...options.headers,
     },
+    credentials: 'include', // important!
     ...options,
   });
 
