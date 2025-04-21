@@ -13,12 +13,12 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ currentUser }) => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Clear JSESSIONID cookie
-    document.cookie = 'JSESSIONID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    // Reload the page to reset the application state
-    window.location.reload();
-  };
+  // const handleLogout = () => {
+  //   // Clear JSESSIONID cookie
+  //   document.cookie = 'JSESSIONID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  //   // Reload the page to reset the application state
+  //   window.location.reload();
+  // };
 
   return (
     <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40 sticky top-0 z-20">
@@ -71,10 +71,22 @@ export const Header: React.FC<HeaderProps> = ({ currentUser }) => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={handleLogout}
+                onClick={async () => {
+                  try {
+                    await fetch('http://localhost:8080/api/users/logout', {
+                      method: 'POST',
+                      credentials: 'include'
+                    });
+                    // Optionally clear frontend state or redirect
+                    window.location.href = '/'; // Redirect to home or login page
+                  } catch (error) {
+                    console.error('Logout failed:', error);
+                  }
+                }}
               >
                 Logout
               </Button>
+
             </div>
           ) : (
             <div className="flex items-center gap-2">
