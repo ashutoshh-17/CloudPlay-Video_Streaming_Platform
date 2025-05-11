@@ -23,14 +23,9 @@ public class RoomController {
     
     @GetMapping("/{id}")
     public ResponseEntity<RoomDTO> getRoomById(@PathVariable String id) {
-        try {
-            Long roomId = Long.parseLong(id);
-            return roomService.getRoomById(roomId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-        } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return roomService.getRoomById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
     
     @PostMapping
@@ -41,14 +36,7 @@ public class RoomController {
             return ResponseEntity.badRequest().build();
         }
         
-        Long videoId = null;
-        if (request.get("videoId") != null) {
-            try {
-                videoId = Long.parseLong(request.get("videoId").toString());
-            } catch (NumberFormatException e) {
-                // Ignore parsing error, keep videoId as null
-            }
-        }
+        String videoId = (String) request.get("videoId");
         
         LocalDateTime scheduledTime = null;
         if (request.get("scheduledTime") != null) {
@@ -72,47 +60,33 @@ public class RoomController {
     public ResponseEntity<Void> joinRoom(
             @PathVariable String roomId, 
             @RequestBody Map<String, Object> request) {
-        try {
-            String userId = (String) request.get("userId");
-            
-            if (userId == null) {
-                return ResponseEntity.badRequest().build();
-            }
-            
-            boolean success = roomService.joinRoom(
-                Long.parseLong(roomId), 
-                Long.parseLong(userId)
-            );
-            
-            return success 
-                ? ResponseEntity.ok().build() 
-                : ResponseEntity.notFound().build();
-        } catch (NumberFormatException e) {
+        String userId = (String) request.get("userId");
+        
+        if (userId == null) {
             return ResponseEntity.badRequest().build();
         }
+        
+        boolean success = roomService.joinRoom(roomId, userId);
+        
+        return success 
+            ? ResponseEntity.ok().build() 
+            : ResponseEntity.notFound().build();
     }
     
     @PostMapping("/{roomId}/leave")
     public ResponseEntity<Void> leaveRoom(
             @PathVariable String roomId, 
             @RequestBody Map<String, Object> request) {
-        try {
-            String userId = (String) request.get("userId");
-            
-            if (userId == null) {
-                return ResponseEntity.badRequest().build();
-            }
-            
-            boolean success = roomService.leaveRoom(
-                Long.parseLong(roomId), 
-                Long.parseLong(userId)
-            );
-            
-            return success 
-                ? ResponseEntity.ok().build() 
-                : ResponseEntity.notFound().build();
-        } catch (NumberFormatException e) {
+        String userId = (String) request.get("userId");
+        
+        if (userId == null) {
             return ResponseEntity.badRequest().build();
         }
+        
+        boolean success = roomService.leaveRoom(roomId, userId);
+        
+        return success 
+            ? ResponseEntity.ok().build() 
+            : ResponseEntity.notFound().build();
     }
 }

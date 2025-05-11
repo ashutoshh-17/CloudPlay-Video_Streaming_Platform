@@ -1,32 +1,26 @@
 
-import javax.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-@Table(name = "rooms")
+@Document(collection = "rooms")
 public class RoomEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     
     private String name;
     
     private boolean isPrivate;
     
-    @Column(name = "scheduled_time")
     private LocalDateTime scheduledTime;
     
-    @Column(name = "current_video_id")
-    private Long currentVideoId;
+    private String currentVideoId;
     
-    @ManyToMany
-    @JoinTable(
-        name = "room_viewers",
-        joinColumns = @JoinColumn(name = "room_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
+    @DBRef
     private Set<UserEntity> viewers = new HashSet<>();
     
     // Constructors
@@ -38,11 +32,11 @@ public class RoomEntity {
     }
     
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
     
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
     
@@ -70,11 +64,11 @@ public class RoomEntity {
         this.scheduledTime = scheduledTime;
     }
     
-    public Long getCurrentVideoId() {
+    public String getCurrentVideoId() {
         return currentVideoId;
     }
     
-    public void setCurrentVideoId(Long currentVideoId) {
+    public void setCurrentVideoId(String currentVideoId) {
         this.currentVideoId = currentVideoId;
     }
     

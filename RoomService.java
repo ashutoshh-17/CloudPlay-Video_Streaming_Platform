@@ -1,7 +1,6 @@
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,13 +25,12 @@ public class RoomService {
             .collect(Collectors.toList());
     }
     
-    public Optional<RoomDTO> getRoomById(Long id) {
+    public Optional<RoomDTO> getRoomById(String id) {
         return roomRepository.findById(id)
             .map(this::convertToDTO);
     }
     
-    @Transactional
-    public RoomDTO createRoom(String name, Long videoId, LocalDateTime scheduledTime, boolean isPrivate) {
+    public RoomDTO createRoom(String name, String videoId, LocalDateTime scheduledTime, boolean isPrivate) {
         RoomEntity room = new RoomEntity();
         room.setName(name);
         room.setCurrentVideoId(videoId);
@@ -43,8 +41,7 @@ public class RoomService {
         return convertToDTO(savedRoom);
     }
     
-    @Transactional
-    public boolean joinRoom(Long roomId, Long userId) {
+    public boolean joinRoom(String roomId, String userId) {
         Optional<RoomEntity> roomOpt = roomRepository.findById(roomId);
         Optional<UserEntity> userOpt = userRepository.findById(userId);
         
@@ -60,8 +57,7 @@ public class RoomService {
         return false;
     }
     
-    @Transactional
-    public boolean leaveRoom(Long roomId, Long userId) {
+    public boolean leaveRoom(String roomId, String userId) {
         Optional<RoomEntity> roomOpt = roomRepository.findById(roomId);
         Optional<UserEntity> userOpt = userRepository.findById(userId);
         
@@ -79,7 +75,7 @@ public class RoomService {
     
     private RoomDTO convertToDTO(RoomEntity room) {
         RoomDTO dto = new RoomDTO();
-        dto.setId(room.getId().toString());
+        dto.setId(room.getId());
         dto.setName(room.getName());
         dto.setViewers(room.getViewerCount());
         dto.setPrivate(room.isPrivate());
