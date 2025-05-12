@@ -1,4 +1,6 @@
 
+package com.cloud.play.app.dto;
+
 import java.time.LocalDateTime;
 
 public class VideoDTO {

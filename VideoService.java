@@ -1,6 +1,9 @@
 
 package com.cloud.play.app.service;
 
+import com.cloud.play.app.dto.VideoDTO;
+import com.cloud.play.app.entity.VideoEntity;
+import com.cloud.play.app.repository.VideoRepository;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class VideoService {
@@ -27,12 +32,21 @@ public class VideoService {
         return uploadResult.get("secure_url").toString(); // Returns Cloudinary URL
     }
     
-    public Optional<VideoDTO> getVideoById(String id) {
-        return videoRepository.findById(id)
-            .map(this::convertToDTO);
+    public VideoEntity saveVideo(VideoEntity video) {
+        return videoRepository.save(video);
     }
     
-    private VideoDTO convertToDTO(VideoEntity video) {
+    public List<VideoDTO> getAllVideos() {
+        return videoRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+    
+    public Optional<VideoEntity> getVideoById(String id) {
+        return videoRepository.findById(id);
+    }
+    
+    public VideoDTO convertToDTO(VideoEntity video) {
         VideoDTO dto = new VideoDTO();
         dto.setId(video.getId());
         dto.setTitle(video.getTitle());
