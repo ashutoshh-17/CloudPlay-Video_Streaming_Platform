@@ -69,23 +69,29 @@ export const Header: React.FC<HeaderProps> = ({ currentUser }) => {
                 </div>
               )}
               <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={async () => {
-                  try {
-                    await fetch('http://localhost:8080/api/users/logout', {
-                      method: 'POST',
-                      credentials: 'include'
-                    });
-                    // Optionally clear frontend state or redirect
-                    window.location.href = '/'; // Redirect to home or login page
-                  } catch (error) {
-                    console.error('Logout failed:', error);
-                  }
-                }}
-              >
+                    variant="outline" 
+                    size="sm" 
+                    onClick={async () => {
+                      try {
+                        const res = await fetch('http://localhost:8080/api/users/logout', {
+                          method: 'POST',
+                          credentials: 'include',
+                        });
+
+                        if (res.ok) {
+                          // Logout was successful, now refresh
+                          window.location.reload();
+                        } else {
+                          console.error('Logout failed with status:', res.status);
+                        }
+                      } catch (error) {
+                        console.error('Logout failed:', error);
+                      }
+                    }}
+                  >
                 Logout
               </Button>
+
 
             </div>
           ) : (
