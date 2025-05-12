@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { uploadVideo } from '@/services/apiService';
 import { Video, FileVideo, Upload } from 'lucide-react';
+import { toast } from "@/components/ui/use-toast";
 
 interface VideoUploadProps {
   onUploadSuccess: (videoData: any) => void;
@@ -60,7 +61,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onUploadSuccess, onUploadStar
       onUploadStart();
       
       // In a real application, you would track upload progress
-      // For demo, we'll use a simulated progress
+      // For now, we'll use a simulated progress
       const simulateProgress = setInterval(() => {
         setUploadProgress(prev => {
           if (prev >= 95) {
@@ -80,11 +81,16 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onUploadSuccess, onUploadStar
       setTitle('');
       setDescription('');
       
+      toast({
+        title: "Video Uploaded Successfully",
+        description: "Your video has been uploaded and is now available."
+      });
+      
       onUploadSuccess(uploadedVideo);
       
     } catch (err) {
       console.error('Upload failed:', err);
-      setError('Upload failed. This is a demo frontend without the required SpringBoot backend.');
+      setError('Upload failed. Please make sure the server is running.');
     } finally {
       setIsUploading(false);
     }
