@@ -8,6 +8,9 @@ import { VideoPlayer } from '@/components/VideoPlayer';
 import { Room, User, Video } from '@/lib/types';
 import { getRoomById, getCurrentUser, getVideoById } from '@/services/apiService';
 import { websocketService } from '@/services/websocketService';
+import { scheduleService, ScheduleMessage } from '@/services/scheduleService';
+import { toast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
 
 const VideoRoom: React.FC = () => {
   const params = useParams<{ id: string }>();
@@ -20,6 +23,7 @@ const VideoRoom: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const [joining, setJoining] = useState(true);
+  const [scheduled, setScheduled] = useState<string | null>(null);
 
   // Generate a random user ID for demo purposes
   const getUserId = () => {
@@ -55,6 +59,11 @@ const VideoRoom: React.FC = () => {
         // Fetch room data
         const roomData = await getRoomById(roomId);
         setRoom(roomData);
+        
+        // Set scheduled time if available
+        if (roomData.scheduledTime) {
+          setScheduled(roomData.scheduledTime);
+        }
         
         // Fetch video if room has one
         if (roomData.currentVideo) {
@@ -107,6 +116,7 @@ const VideoRoom: React.FC = () => {
         websocketService.leaveRoom(roomId, currentUser.id);
         websocketService.disconnect();
       }
+      scheduleService.disconnect();
     };
   }, [roomId]);
 
@@ -114,15 +124,46 @@ const VideoRoom: React.FC = () => {
   useEffect(() => {
     if (!currentUser || !room) return;
     
-    const connectToWebSocket = async () => {
+    const connectToWebSockets = async () => {
       try {
         setJoining(true);
-        // Connect to WebSocket
+        
+        // Connect to video sync WebSocket
         await websocketService.connect(currentUser.id, roomId);
         setConnected(true);
         
         // Join room via WebSocket
         websocketService.joinRoom(roomId, currentUser.id);
+        
+        // Connect to schedule service
+        await scheduleService.connect(roomId);
+        
+        // Subscribe to schedule messages
+        const unsubscribe = scheduleService.subscribe((message: ScheduleMessage) => {
+          if (message.type === 'SYNC') {
+            if (message.scheduledTime) {
+              setScheduled(message.scheduledTime);
+            }
+            
+            if (message.video && (!currentVideo || currentVideo.id !== message.video.id)) {
+              setCurrentVideo(message.video as Video);
+            }
+          } else if (message.type === 'START') {
+            // Auto-play video when scheduled time is reached
+            const videoElement = document.querySelector('video');
+            if (videoElement) {
+              videoElement.play().catch(console.error);
+            }
+            toast({
+              title: "It's time!",
+              description: "The scheduled video is starting now"
+            });
+          }
+        });
+        
+        // Clean up subscription
+        return () => unsubscribe();
+        
       } catch (err) {
         console.error('Failed to connect to WebSocket:', err);
         setError('Failed to connect to sync service. Some features may not work properly.');
@@ -131,8 +172,8 @@ const VideoRoom: React.FC = () => {
       }
     };
     
-    connectToWebSocket();
-  }, [currentUser, room, roomId]);
+    connectToWebSockets();
+  }, [currentUser, room, roomId, currentVideo]);
 
   if (loading || joining) {
     return (
@@ -194,6 +235,19 @@ const VideoRoom: React.FC = () => {
             </div>
           </div>
         </div>
+        
+        {/* Scheduled time indicator */}
+        {scheduled && (
+          <div className="mb-4 p-3 bg-blue-500/10 border border-blue-200 rounded-md text-blue-700 dark:text-blue-300">
+            <p className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              Scheduled to play: {format(new Date(scheduled), 'PPpp')}
+            </p>
+          </div>
+        )}
         
         {/* Error notification */}
         {error && (
