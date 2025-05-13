@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -35,18 +36,21 @@ public class VideoScheduleController {
     public ScheduleMessage syncRoom(@DestinationVariable String roomId) {
         return roomService.getRoomById(roomId)
                 .map(room -> {
-                    VideoDTO video = null;
+                    // Create final reference for the video that will be used in lambda
+                    final VideoDTO[] videoRef = {null};
+                    
                     if (room.getCurrentVideo() != null) {
                         videoService.getVideoById(room.getCurrentVideo().getId())
                                 .ifPresent(v -> {
-                                    video = videoService.convertToDTO(v);
+                                    // Assign to array element instead of variable
+                                    videoRef[0] = videoService.convertToDTO(v);
                                 });
                     }
                     
                     return new ScheduleMessage(
                             "SYNC",
                             roomId,
-                            video,
+                            videoRef[0], // Use the array element
                             room.getScheduledTime() != null ? room.getScheduledTime().toString() : null
                     );
                 })
