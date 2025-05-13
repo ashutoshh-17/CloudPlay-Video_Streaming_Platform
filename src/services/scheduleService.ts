@@ -1,7 +1,7 @@
 
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 
 export interface ScheduleMessage {
   type: 'SYNC' | 'START' | 'ERROR';
