@@ -71,7 +71,7 @@ export function SchedulePicker({ value, onChange }: SchedulePickerProps) {
               selected={selectedDate}
               onSelect={setSelectedDate}
               initialFocus
-              disabled={(date) => date < new Date()}
+              // Removed the disabled property to allow today's date selection
               className="p-3 pointer-events-auto"
             />
           </PopoverContent>

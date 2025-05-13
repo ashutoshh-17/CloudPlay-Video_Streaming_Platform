@@ -122,7 +122,8 @@ export async function createRoom(
       body: JSON.stringify({ 
         name, 
         videoId,
-        scheduledTime: scheduledTime ? scheduledTime.toISOString() : null 
+        scheduledTime: scheduledTime ? scheduledTime.toISOString() : null,
+        isPrivate: false // Default to public rooms
       }),
     });
   } catch (error) {

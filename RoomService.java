@@ -1,4 +1,11 @@
 
+package com.cloud.play.CloudPlay.service;
+
+import com.cloud.play.CloudPlay.DTO.RoomDTO;
+import com.cloud.play.CloudPlay.entity.RoomEntity;
+import com.cloud.play.CloudPlay.entity.UserEntity;
+import com.cloud.play.CloudPlay.repository.RoomRepository;
+import com.cloud.play.CloudPlay.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -84,7 +91,7 @@ public class RoomService {
         // Set current video if exists
         if (room.getCurrentVideoId() != null) {
             videoService.getVideoById(room.getCurrentVideoId())
-                .ifPresent(dto::setCurrentVideo);
+                .ifPresent(video -> dto.setCurrentVideo(videoService.convertToDTO(video)));
         }
         
         return dto;
